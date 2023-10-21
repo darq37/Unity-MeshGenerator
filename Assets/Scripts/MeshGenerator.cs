@@ -13,15 +13,38 @@ public class MeshGenerator : MonoBehaviour {
 	Mesh mesh;
 	MeshRenderer meshRenderer;
 	MeshFilter meshFilter;
+	
+	public bool printTimers;
 
 	private List<Vector3> _vertices = new List<Vector3>();
 	private int xOffset = 577372; // najmniejsza wspolrzędna x
 	private int zOffset = 146223; // najmniejsza wspolrzędna y
 	private float yOffset = 1386f; // najnizszy punkt na mapie
 
+	public int mapSizeX;
+	public int mapSizeZ;
+	
+
 	[Header("Mesh Settings")]
 	public Material material;
 	public float elevationScale = 1;
+	
+	[Header ("Erosion Settings")]
+	public int numErosionIterations = 2;
+	public int erosionBrushRadius = 3;
+
+	public int maxLifetime = 30;
+	public float sedimentCapacityFactor = 3;
+	public float minSedimentCapacity = .01f;
+	public float depositSpeed = 0.3f;
+	public float erodeSpeed = 0.3f;
+
+	public float evaporateSpeed = .01f;
+	public float gravity = 4;
+	public float startSpeed = 1;
+	public float startWater = 1;
+	[Range (0, 1)]
+	public float inertia = 0.3f;
 
 
 	public void ConstructMesh() {
@@ -45,14 +68,39 @@ public class MeshGenerator : MonoBehaviour {
 		material.SetFloat("_MaxHeight", elevationScale);
 	}
 
+	public void Erode() {
+		int numThreads = numErosionIterations / 1024;
+		
+		// Create brush
+		List<int> brushIndexOffsets = new List<int> ();
+		List<float> brushWeights = new List<float> ();
+		
+		float weightSum = 0;
+		for (int brushY = -erosionBrushRadius; brushY <= erosionBrushRadius; brushY++) {
+			for (int brushX = -erosionBrushRadius; brushX <= erosionBrushRadius; brushX++) {
+				float sqrDst = brushX * brushX + brushY * brushY;
+				if (sqrDst < erosionBrushRadius * erosionBrushRadius) {
+					brushIndexOffsets.Add (brushY * mapSizeX + brushX);
+					float brushWeight = 1 - Mathf.Sqrt (sqrDst) / erosionBrushRadius;
+					weightSum += brushWeight;
+					brushWeights.Add (brushWeight);
+				}
+			}
+		}
+		for (int i = 0; i < brushWeights.Count; i++) {
+			brushWeights[i] /= weightSum;
+		}
+		
+	}
+
 
 	int[] getTriangles() {
 		int vert = 0;
 		int tris = 0;
 		//1974
-		var mapSizeX = (int)((_vertices.Max(v => v.x)) - (_vertices.Min(v => v.x)));
+		mapSizeX = (int)((_vertices.Max(v => v.x)) - (_vertices.Min(v => v.x)));
 		//2848
-		var mapSizeZ = (int)((_vertices.Max(v => v.z)) - (_vertices.Min(v => v.z)));
+		mapSizeZ = (int)((_vertices.Max(v => v.z)) - (_vertices.Min(v => v.z)));
 
 		var triangles = new int[mapSizeX * mapSizeZ * 6];
 

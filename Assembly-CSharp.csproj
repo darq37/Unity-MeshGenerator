@@ -41,13 +41,19 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
+     <Compile Include="Assets\Scripts\Erosion.cs" />
      <Compile Include="Assets\Scripts\MeshGenerator.cs" />
      <Folder Include="Assets" />
+     <Folder Include="Assets\Materials" />
      <Folder Include="Assets\Scenes" />
      <Folder Include="Assets\Scripts" />
+     <Folder Include="Assets\Shaders" />
+     <None Include="Assets\Shaders\Terrain.shader" />
      <None Include="Assets\Resources\points.txt" />
+     <None Include="Assets\Resources\small.txt" />
      <Folder Include="Assets\Resources" />
      <None Include="Assets\Resources\BillingMode.json" />
+     <None Include="Assets\Shaders\Terrain2.shader" />
      <Reference Include="UnityEngine">
      <HintPath>C:\Program Files\Unity\Hub\Editor\2021.3.31f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
      </Reference>

@@ -3,3 +3,8 @@ obj/
 .vscode/
 Library/
 Temp/
+/Logs/
+/.idea/
+/Assets/Scenes/
+/Assets/Resources/points.txt
+.log
